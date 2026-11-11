@@ -1,6 +1,33 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const testSongs = [
+  {
+    title: "Midnight Memories",
+    artist: "The Dreamers",
+    icon: "🌙",
+    gradient: "linear-gradient(135deg, #654ea3, #eaafc8)",
+  },
+  {
+    title: "Ocean Lights",
+    artist: "Nova Blue",
+    icon: "🌊",
+    gradient: "linear-gradient(135deg, #2193b0, #6dd5ed)",
+  },
+  {
+    title: "Golden Hour",
+    artist: "Summer Days",
+    icon: "☀️",
+    gradient: "linear-gradient(135deg, #f7971e, #ffd200)",
+  },
+  {
+    title: "After the Rain",
+    artist: "Cloud Nine",
+    icon: "🌧️",
+    gradient: "linear-gradient(135deg, #373b44, #4286f4)",
+  },
+];
+
 function App() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -8,9 +35,13 @@ function App() {
   const IS_OVERLAY = urlParams.get("overlay") === "true";
 
   const [visible, setVisible] = useState(true);
+  const [songIndex, setSongIndex] = useState(0);
+
   const timerRef = useRef<number | null>(null);
 
-  // Show the song notification for approximately 5 seconds.
+  const currentSong = testSongs[songIndex];
+
+  // Show notification for approximately 5 seconds.
   const showNotification = () => {
     if (timerRef.current !== null) {
       window.clearTimeout(timerRef.current);
@@ -18,10 +49,15 @@ function App() {
 
     setVisible(true);
 
-    // 4.65 seconds visible + 0.35 seconds fade-out.
     timerRef.current = window.setTimeout(() => {
       setVisible(false);
     }, 4650);
+  };
+
+  // Simulate a new song starting.
+  const playNextSong = () => {
+    setSongIndex((previous) => (previous + 1) % testSongs.length);
+    showNotification();
   };
 
   useEffect(() => {
@@ -64,7 +100,8 @@ function App() {
           boxSizing: "border-box",
           overflow: "hidden",
           borderRadius: "12px",
-          background: "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.07))",
+          background:
+            "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.07))",
           backdropFilter: "blur(28px) saturate(180%)",
           WebkitBackdropFilter: "blur(28px) saturate(180%)",
           border: "1px solid rgba(255,255,255,0.28)",
@@ -79,22 +116,21 @@ function App() {
           pointerEvents: "none",
         }}
       >
-        {/* TEMPORARY ALBUM ART */}
+        {/* SAMPLE ALBUM ART */}
         <div
           style={{
             width: "58px",
             height: "58px",
             minWidth: "58px",
             borderRadius: "8px",
-            background:
-              "linear-gradient(135deg, #8e44ad, #3498db, #1db954)",
+            background: currentSong.gradient,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: "27px",
           }}
         >
-          ♪
+          {currentSong.icon}
         </div>
 
         {/* SONG INFORMATION */}
@@ -126,7 +162,7 @@ function App() {
               textOverflow: "ellipsis",
             }}
           >
-            Example Song
+            {currentSong.title}
           </span>
 
           <span
@@ -138,7 +174,7 @@ function App() {
               textOverflow: "ellipsis",
             }}
           >
-            Example Artist
+            {currentSong.artist}
           </span>
         </div>
       </div>
@@ -146,7 +182,7 @@ function App() {
       {/* EDITOR TEST BUTTON */}
       {!IS_OVERLAY && (
         <button
-          onClick={showNotification}
+          onClick={playNextSong}
           style={{
             width: "fit-content",
             padding: "8px 12px",
@@ -158,7 +194,7 @@ function App() {
             cursor: "pointer",
           }}
         >
-          Test song notification
+          Next test song
         </button>
       )}
     </div>
